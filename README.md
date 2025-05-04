@@ -1,202 +1,170 @@
----
+# 🏠 Airbnb Clone Project
 
-## 🏠 Airbnb Clone Project 
-
-### 📌 Overview
-
-The **Airbnb Clone Project** is a real-world inspired backend development project that replicates key functionalities of Airbnb. It focuses on building scalable APIs, designing robust databases, ensuring secure user and payment interactions, and deploying with modern DevOps practices.
+[![CI/CD](https://github.com/cox101/airbnb-clone-project/actions/workflows/ci.yml/badge.svg)](https://github.com/cox101/airbnb-clone-project/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
-### 🎯 Project Goals
+## 📌 Overview
 
-* Build secure RESTful and GraphQL APIs.
-* Manage user authentication and roles.
-* Enable property listing and booking.
-* Integrate payment handling.
-* Allow property reviews and ratings.
-* Implement CI/CD pipelines for deployment.
-* Optimize database queries for performance.
+The **Airbnb Clone Project** is a real-world inspired backend system that replicates key functionalities of Airbnb. Built using Django and Django REST Framework, the project focuses on secure APIs, robust database design, seamless user interactions, payment integrations, and modern CI/CD workflows.
+
+---
+
+## 🎯 Project Goals
+
+- Build secure RESTful and GraphQL APIs.
+- Manage user authentication and roles.
+- Enable property listing and booking.
+- Integrate secure payment handling.
+- Allow guests to leave reviews and ratings.
+- Implement CI/CD pipelines for deployment.
+- Optimize database queries for performance.
 
 ---
 
 ## 👥 Team Roles
 
-| Role                       | Description                                                                                      |
-| -------------------------- | ------------------------------------------------------------------------------------------------ |
-| **Backend Developer**      | Develops API endpoints, business logic, and integrates services (e.g., payment, authentication). |
-| **Database Administrator** | Designs relational schema, manages indexes, and ensures data integrity and performance.          |
-| **DevOps Engineer**        | Manages containerization (Docker), CI/CD pipelines (GitHub Actions), and deployment workflows.   |
-| **QA Engineer**            | Ensures all API endpoints function correctly through unit, integration, and end-to-end testing.  |
+| Role                       | Responsibilities                                                                                  |
+|---------------------------|---------------------------------------------------------------------------------------------------|
+| **Backend Developer**      | Implements API endpoints, business logic, and third-party integrations (auth, payments).          |
+| **Database Administrator** | Designs schema, maintains data integrity, optimizes queries.                                     |
+| **DevOps Engineer**        | Manages Docker, CI/CD pipelines with GitHub Actions, and deployment workflows.                   |
+| **QA Engineer**            | Writes tests, performs API validation, and ensures functionality with automated test suites.     |
 
 ---
 
 ## 🛠️ Technology Stack
 
-| Technology                      | Purpose                                                                             |
-| ------------------------------- | ----------------------------------------------------------------------------------- |
-| **Django**                      | A high-level Python web framework for building secure and maintainable APIs.        |
-| **Django REST Framework (DRF)** | Provides powerful tools for building RESTful APIs with Django.                      |
-| **GraphQL**                     | Enables flexible and efficient client-server communication through custom queries.  |
-| **MySQL**                       | A reliable relational database to store user, property, booking, and payment data.  |
-| **Docker**                      | Ensures consistent development and deployment environments using containers.        |
-| **Redis**                       | Used for caching, session management, and optimizing database performance.          |
-| **Celery**                      | Handles background tasks like sending emails or processing payments asynchronously. |
-| **GitHub Actions**              | Automates testing and deployment with CI/CD pipelines.                              |
+| Technology                      | Purpose                                                                                  |
+|---------------------------------|------------------------------------------------------------------------------------------|
+| **Django + DRF**                | Backend framework for building RESTful APIs.                                             |
+| **GraphQL**                     | Enables dynamic queries between client and server.                                       |
+| **MySQL**                       | Stores user, property, booking, and payment data.                                        |
+| **Redis**                       | Supports caching and background task queuing.                                            |
+| **Celery**                      | Executes asynchronous tasks like sending emails and processing payments.                |
+| **Docker**                      | Containers for consistent dev/test/prod environments.                                    |
+| **GitHub Actions**              | CI/CD automation tool for testing and deploying the app.                                 |
 
 ---
 
 ## 🗄️ Database Design
 
-The backend system is modeled around key entities that represent users, properties, bookings, payments, and reviews. Below is an outline of the primary tables and their relationships.
+### Users
 
-### 🧑 Users
+Stores authentication credentials and user roles.
 
-| Field      | Description                           |
-| ---------- | ------------------------------------- |
-| `id`       | Unique identifier for the user        |
-| `username` | Unique name for login                 |
-| `email`    | User’s email address (unique)         |
-| `password` | Hashed password for authentication    |
-| `role`     | Determines if user is a guest or host |
+- `id`
+- `username`
+- `email`
+- `password`
+- `role` (guest or host)
 
-* **Relationships**:
+### Properties
 
-  * One user can create multiple properties.
-  * One user can make multiple bookings and write multiple reviews.
+Details about listings.
 
----
+- `id`, `title`, `description`, `location`, `price_per_night`, `host_id`
 
-### 🏠 Properties
+### Bookings
 
-| Field             | Description                        |
-| ----------------- | ---------------------------------- |
-| `id`              | Unique identifier for the property |
-| `title`           | Name of the listing                |
-| `description`     | Detailed info about the property   |
-| `location`        | Address or coordinates             |
-| `price_per_night` | Cost to stay per night             |
-| `host_id`         | Foreign key to Users table         |
+Records reservation data.
 
-* **Relationships**:
+- `id`, `user_id`, `property_id`, `check_in`, `check_out`, `status`
 
-  * One property is listed by one host (user).
-  * One property can have many bookings and reviews.
+### Payments
 
----
+Tracks financial transactions.
 
-### 📅 Bookings
+- `id`, `booking_id`, `amount`, `status`, `payment_date`
 
-| Field         | Description                      |
-| ------------- | -------------------------------- |
-| `id`          | Unique booking ID                |
-| `user_id`     | Foreign key to Users table       |
-| `property_id` | Foreign key to Properties table  |
-| `check_in`    | Booking start date               |
-| `check_out`   | Booking end date                 |
-| `status`      | Pending, confirmed, or cancelled |
+### Reviews
 
-* **Relationships**:
+Captures user feedback and ratings.
 
-  * Each booking is made by a user for one property.
-
----
-
-### 💳 Payments
-
-| Field          | Description                   |
-| -------------- | ----------------------------- |
-| `id`           | Unique payment ID             |
-| `booking_id`   | Foreign key to Bookings table |
-| `amount`       | Total payment amount          |
-| `status`       | Paid, failed, or pending      |
-| `payment_date` | Timestamp of transaction      |
-
-* **Relationships**:
-
-  * Each payment is linked to a specific booking.
-
----
-
-### 📝 Reviews
-
-| Field         | Description                     |
-| ------------- | ------------------------------- |
-| `id`          | Unique review ID                |
-| `user_id`     | Foreign key to Users table      |
-| `property_id` | Foreign key to Properties table |
-| `rating`      | Rating score (e.g., 1 to 5)     |
-| `comment`     | User’s written review           |
-
-* **Relationships**:
-
-  * A review is written by a user for a property.
-  * One property can have many reviews.
-
----
-
-### 🔗 Entity Relationships Summary
-
-* A **User** can:
-
-  * List multiple **Properties**
-  * Make multiple **Bookings**
-  * Write multiple **Reviews**
-
-* A **Property**:
-
-  * Is owned by a **User**
-  * Has many **Bookings** and **Reviews**
-
-* A **Booking**:
-
-  * Is made by a **User** for a **Property**
-  * Has one associated **Payment**
-
-* A **Payment**:
-
-  * Belongs to one **Booking**
-
-* A **Review**:
-
-  * Is written by a **User** for a **Property**
+- `id`, `user_id`, `property_id`, `rating`, `comment`
 
 ---
 
 ## 🧩 Feature Breakdown
 
-### 1. 👤 User Management
+### 👤 User Management
 
-This feature allows users to register, log in securely, and manage their profiles. It ensures authentication and authorization, enabling different roles (e.g., guest or host) within the system.
+Handles user registration, login, profile updates, and role-based access control. Ensures only authenticated users interact with protected endpoints.
 
-### 2. 🏠 Property Management
+### 🏠 Property Management
 
-Hosts can create, update, view, and delete property listings. This functionality supports the core business model by enabling a variety of accommodations to be listed and made available for booking.
+Hosts can create, update, and manage listings. Guests can view and filter available properties.
 
-### 3. 📅 Booking System
+### 📅 Booking System
 
-Users can browse listings and make bookings for specific dates. The system tracks check-in/check-out times and prevents overlapping reservations, ensuring availability and reliability.
+Guests can book available properties with defined check-in and check-out dates. Prevents overlapping reservations.
 
-### 4. 💳 Payment Processing
+### 💳 Payment Processing
 
-Integrated payment functionality allows users to pay for bookings directly through the platform. It securely records transaction data and updates booking statuses based on payment success or failure.
+Securely integrates third-party payment gateways (e.g., Stripe) for handling transactions linked to bookings.
 
-### 5. 🌟 Review System
+### 🌟 Review System
 
-Guests can rate and leave feedback for properties they’ve stayed in. This builds trust and transparency on the platform, helping future users make informed decisions.
+Guests can rate and write reviews for properties, enhancing trust and decision-making for future bookings.
 
-### 6. ⚡ Data Optimization
+### ⚡ Data Optimization
 
-Indexes and caching are used to enhance the speed of data retrieval. This ensures that the application remains fast and responsive, even as the number of users and properties grows.
+Utilizes indexes, caching (Redis), and query optimization to maintain speed and performance as data scales.
 
-### 7. 🔐 API Security
+### 🔐 API Security
 
-Security best practices such as token-based authentication, input validation, and rate limiting are implemented. These measures protect user data and maintain the integrity of the platform.
+Implements JWT-based authentication, input sanitization, HTTPS, and role-based access control to protect users and data.
 
-### 8. 🔁 CI/CD Integration
+### 🔁 CI/CD Integration
 
-Automated pipelines test and deploy the application to ensure smooth, continuous delivery of updates. This minimizes downtime and enables faster iteration during development.
+GitHub Actions automates testing, building, and deploying the project using Docker and Docker Compose workflows.
 
 ---
 
+## 🔐 API Security
+
+Security is integral to the platform:
+
+- **Authentication**: Verifies user identity using JWT tokens.
+- **Authorization**: Role-based access ensures only permitted actions are allowed.
+- **Rate Limiting**: Prevents abuse and DDoS using throttling.
+- **Input Validation**: Protects against SQL injection and XSS attacks.
+- **HTTPS & Secure Headers**: Ensures encrypted data transmission and mitigates common exploits.
+- **Secure Payment Flow**: Integrates trusted payment gateways with tokenized transactions.
+
+---
+
+## 🔁 CI/CD Pipeline
+
+### Why CI/CD?
+
+- 🔁 **Continuous Integration**: Ensures that new code merges don’t break existing features.
+- 🚀 **Continuous Deployment**: Automates release of tested features to staging/production.
+- ✅ **Faster Development**: Enables rapid iteration and delivery of updates.
+- 🧪 **Improved Quality**: Automatically runs linting, tests, and builds before deployments.
+
+### Tools
+
+- **GitHub Actions** – Automates test and deploy workflows.
+- **Docker + Docker Compose** – Manages application containers for each service.
+- **Pytest** – Runs backend test suites.
+- **PostgreSQL (in Docker)** – Provides consistent database for testing environments.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Python 3.10+
+- Docker & Docker Compose
+- MySQL or PostgreSQL
+- Redis
+
+### Setup
+
+```bash
+git clone https://github.com/cox101/airbnb-clone-project.git
+cd airbnb-clone-project
 
